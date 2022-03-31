@@ -25,7 +25,7 @@ export default function GetPassword(){
                 </Text>
             </View>
 
-            <Text style={styles.title}>SENHAS</Text>
+            <Text style={styles.title}>GET PASSWORD</Text>
             <Text style={styles.description}>Escolha um dos casos abaixo e salve o dia.</Text>
 
             <FlatList 
