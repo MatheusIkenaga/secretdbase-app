@@ -15,22 +15,27 @@ export default function Validate2fa({route}){
 
 
     async function validate2fa(){
-        await api.post('/api/verify2fa',{'token':token2fa},headers)
-        .then((response) => {
-            if(response.data.success !== true){
-                alert('Error, try again')
-            } else {
-                navigation.navigate('getPassword', { 'loginToken': token, '2faSkipped': false})
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            console.log(error.response.status);
-        });
+        if (token){
+            await api.post('/api/verify2fa',{'token':token2fa},headers)
+            .then((response) => {
+                if(response.data.success !== true){
+                    alert('Error, try again')
+                } else {
+                    navigation.navigate('getPassword', { 'loginToken': token, 'skipped': false})
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                console.log(error.response.status);
+                if (error.response.status==401){
+                    navigation.navigate('login')
+                }
+            });
+        }
     }
 
     function skip2fa(){
-        navigation.navigate('getPassword', { 'loginToken': token, '2faSkipped': true})
+        navigation.navigate('getPassword', { 'loginToken': token, 'skipped': true})
     }
 
     React.useEffect(() => {

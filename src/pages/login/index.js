@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useNavigation} from '@react-navigation/native'
 import * as Google from 'expo-auth-session/providers/google';
-import {View, Image, Button, Text, TextInput, Item } from 'react-native'
+import {View, Image, Button, Text, TextInput, ActivityIndicator } from 'react-native'
 import axios from 'axios'
 import logoImg from '../../assets/logoLogin.png'
 import api from '../../services/api'
@@ -14,6 +14,7 @@ export default function Login(){
     const [number2, onChangeNumber2] = React.useState(null);
     const [token, setToken] = React.useState(null);
     const [has2fa, setHas2fa] = React.useState(null);
+    const [loading, setLoading] = React.useState(false);
 
     let [fontsLoaded] = useFonts({
         AnonymousPro_400Regular
@@ -28,8 +29,7 @@ export default function Login(){
 
     React.useEffect(() => {
         if ((token !== null)&&(has2fa !== null)){
-            console.log('login Screen token:' +token)
-            console.log('Has2fa?:' +has2fa)
+            setLoading(false);
             if (has2fa == false){
                 navigation.navigate('add2fa', { 'loginToken': token })
             } else {
@@ -38,7 +38,7 @@ export default function Login(){
         } else{
             if (response?.type === 'success') {
                 const { authentication } = response;
-    
+                setLoading(true);
                 //Getting user data from Google
                 axios
                 .get("https://www.googleapis.com/userinfo/v2/me", 
@@ -58,11 +58,13 @@ export default function Login(){
                     })
                     .catch(error => {
                         console.log(error);
+                        setLoading(false);
                     });
                 })
                 .catch((error) => {
                     console.log(error),
                     handleMessage('An error ocurred SignIn, try again later')
+                    setLoading(false);
                 });
      
             }
@@ -88,78 +90,87 @@ export default function Login(){
                         color: '#F6F6F6'}}>Login
                     </Text>
                 </View>
-
-                
-                <TextInput
-                style={{
-                    color: '#F6F6F6',
-                    fontFamily: 'AnonymousPro_400Regular',
-                    fontSize: 25,
-                    marginBottom: 5,
-                    marginTop: 5,
-                    backgroundColor: '#23272A',
-                    borderRadius: 10,
-                }}
-                textAlign={'center'}
-                placeholderTextColor="#99AAB5"
-                onChangeText={onChangeNumber}
-                placeholder="Email"
-                keyboardType="email-address"
-                autoComplete='email'
-                />
-
-                <TextInput
-                style={{
-                    color: '#F6F6F6',
-                    fontFamily: 'AnonymousPro_400Regular',
-                    fontSize: 25,
-                    marginBottom: 15,
-                    marginTop: 5,
-                    backgroundColor: '#23272A',
-                    borderRadius: 10,
-                }}
-                textAlign={'center'}
-                secureTextEntry={true}
-                placeholderTextColor="#99AAB5"
-                onChangeText={onChangeNumber2}
-                placeholder="Password"
-                keyboardType="default"
-                />
-
-                <Button
-                    color= '#99AAB5'
-                    textStyle={{fontFamily:'AnonymousPro_400Regular'}}
-                    disabled={!request}
-                    title="Login"
-                    onPress={() => {
-                        promptAsync();
+                {loading ? (
+                    <ActivityIndicator
+                    marginTop={30}
+                    visible={loading}
+                    size={'large'}
+                    color={'#F6F6F6'}
+                  />
+                ) : (
+                    <>
+                        <TextInput
+                        style={{
+                            color: '#F6F6F6',
+                            fontFamily: 'AnonymousPro_400Regular',
+                            fontSize: 25,
+                            marginBottom: 5,
+                            marginTop: 5,
+                            backgroundColor: '#23272A',
+                            borderRadius: 10,
                         }}
-                />
+                        textAlign={'center'}
+                        placeholderTextColor="#99AAB5"
+                        onChangeText={onChangeNumber}
+                        placeholder="Email"
+                        keyboardType="email-address"
+                        autoComplete='email'
+                        />
+
+                        <TextInput
+                        style={{
+                            color: '#F6F6F6',
+                            fontFamily: 'AnonymousPro_400Regular',
+                            fontSize: 25,
+                            marginBottom: 15,
+                            marginTop: 5,
+                            backgroundColor: '#23272A',
+                            borderRadius: 10,
+                        }}
+                        textAlign={'center'}
+                        secureTextEntry={true}
+                        placeholderTextColor="#99AAB5"
+                        onChangeText={onChangeNumber2}
+                        placeholder="Password"
+                        keyboardType="default"
+                        />
+
+                        <Button
+                            color= '#99AAB5'
+                            textStyle={{fontFamily:'AnonymousPro_400Regular'}}
+                            disabled={!request}
+                            title="Login"
+                            onPress={() => {
+                                promptAsync();
+                                }}
+                        />
+                        
+                        <View style={styles.header}>
+                            <Text 
+                            style={{
+                                fontFamily: 'AnonymousPro_400Regular',
+                                fontSize: 25,
+                                marginBottom: 16,
+                                marginTop: 10,
+                                color: '#F6F6F6'}}>SignIn
+                            </Text>
+                        </View>
+
+                        <Button
+                        style={{
+                            marginTop: 20,
+                        }}
+                        color= '#99AAB5'
+                        textStyle={{fontFamily:'AnonymousPro_400Regular'}}
+                        disabled={!request}
+                        title="with Google"
+                        onPress={() => {
+                            promptAsync();
+                            }}
+                        />
+                    </>
                 
-                <View style={styles.header}>
-                    <Text 
-                    style={{
-                        fontFamily: 'AnonymousPro_400Regular',
-                        fontSize: 25,
-                        marginBottom: 16,
-                        marginTop: 10,
-                        color: '#F6F6F6'}}>SignIn
-                    </Text>
-                </View>
-
-                <Button
-                style={{
-                    marginTop: 20,
-                }}
-                color= '#99AAB5'
-                textStyle={{fontFamily:'AnonymousPro_400Regular'}}
-                disabled={!request}
-                title="with Google"
-                onPress={() => {
-                    promptAsync();
-                    }}
-                />
-
+                )}
             </View>
         )
     }

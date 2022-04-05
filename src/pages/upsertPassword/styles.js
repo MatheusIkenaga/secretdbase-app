@@ -6,21 +6,33 @@ export default StyleSheet.create({
         flex: 1,
         paddingHorizontal: 24,
         paddingTop: Constants.statusBarHeight + 20,
+        backgroundColor: '#2C2F33',
     },
 
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        fontFamily: 'AnonymousPro_400Regular',
+    },
+
+    search: {
+        alignItems: 'flex-start',
+        flexDirection:'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
     headerText:{
         fontSize: 15,
-        color: '#737380'
+        color: '#737380',
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
     headerTextBold:{
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
     title:{
@@ -28,49 +40,52 @@ export default StyleSheet.create({
         marginBottom: 16,
         marginTop: 48,
         color: '#13131a',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
     description:{
         fontSize: 16,
         lineHeight: 26,
-        color: '#737380'
-    },
-
-    incidentList:{
-        marginTop: 32,
+        color: '#737380',
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
     incident:{
+        marginTop: 30,
         padding:24,
         borderRadius:8,
-        backgroundColor: '#FFF',
-        marginBottom: 16
+        backgroundColor: '#97A9B4',
+        marginBottom: 16,
+        fontFamily: 'AnonymousPro_400Regular',
+        height: 450
     },
 
     incidentProperty:{
-        fontSize: 14,
-        color: '#41414d',
-        fontWeight:'bold'
+        fontSize: 20,
+        color: '#2C2F33',
+        fontFamily: 'AnonymousPro_700Bold',
     },
 
     incidentValue:{
-        marginTop: 8,
-        fontSize: 15,
-        marginBottom: 24,
-        color: '#737380'
+        marginTop: 10,
+        marginBottom:30,
+        fontSize: 20,
+        fontFamily: 'AnonymousPro_400Regular',
+        color: '#23272A',
     },
 
     detailsButton:{
-        flexDirection: 'row',
+        marginTop:25,
         justifyContent: 'space-between',
-        alignItems: 'center'
+        fontFamily: 'AnonymousPro_400Regular',
     },
 
-    detailsButtonText:{
-        color: '#e02041',
-        fontSize: 15,
-        fontWeight: 'bold'
-    }
+    viewValue: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+
+
 
 })

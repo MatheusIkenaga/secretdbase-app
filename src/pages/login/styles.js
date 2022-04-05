@@ -26,6 +26,6 @@ export default StyleSheet.create({
 
     button:{
         borderRadius:8
-    },
+    }
 
 })
