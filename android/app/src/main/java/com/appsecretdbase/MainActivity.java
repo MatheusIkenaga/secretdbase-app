@@ -1,4 +1,4 @@
-package com.appsecretdbase;
+package com.secretdbaseapp;
 
 import android.os.Build;
 import android.os.Bundle;
