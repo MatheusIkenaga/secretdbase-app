@@ -6,10 +6,16 @@ import AppLoading from 'expo-app-loading';
 import api from '../../services/api'
 import * as Clipboard from 'expo-clipboard';
 import { useFonts ,AnonymousPro_700Bold} from '@expo-google-fonts/anonymous-pro';
+import CountDown from 'react-native-countdown-component';
+import moment from 'moment';
 
 import logoImg from '../../assets/logo.png'
 
 import styles from './styles'
+
+var appValue = null
+var userValue = null
+var passValue = null
 
 export default function UpsertPassword({route}){
     const loginToken = route.params.loginToken
@@ -23,50 +29,52 @@ export default function UpsertPassword({route}){
     const [app, setApp] = React.useState(null);
     const [user, setUser] = React.useState(null);
     const [password, setPassword] = React.useState(null);
+    const [totalDuration, setTotalDuration] = React.useState(0);
+    const [disableDelete, setDisableDelete] = React.useState(false);
+    const [disableRestore, setDisableRestore] = React.useState(false);
+    const [disableSave, setDisableSave] = React.useState(false);
+    const [disableCopy, setDisableCopy] = React.useState(false);
     
     const headers = { headers: { 'Authorization': `Bearer ${token}` } }
     
-    const copyToClipboard = () =>
-        Alert.alert('Copy QR Code', 'To Clipboard?', [
-        {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-        },
-        { text: 'OK', onPress: () => Clipboard.setString(code2fa) },
-    ]);
-
+    function copyToClipboard(source,value){
+        Alert.alert('Copy '+source, 'to Clipboard?', [
+            {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+            },
+            { text: 'OK', onPress: () => Clipboard.setString(value) },
+        ])
+        setDisableCopy(false)
+    }
 
     let [fontsLoaded] = useFonts({
         AnonymousPro_700Bold,
     });
 
-    function setNewOrEdit(){
-        if (loginRow){
-            setRow(loginRow)
-        } else{
-            var obj = {
-                app: 'Insert App Name',
-                login: 'Insert Username',
-                password: 'Insert Password',
-            }
-            setRow(obj)
+    function refreshRow(){
+        var obj = {
+            app: app,
+            login: user,
+            password: password
         }
+        setRow(obj)
     }
 
     async function updatePassword(obj){
         if(token){
             const body = {
                 id: obj.id,
-                app: obj.app,
-                login: obj.login,
-                password: obj.password
+                app: appValue,
+                login: userValue,
+                password: passValue
             }
             await api.post('/api/updateapp',body,headers)
             .then((response) => {
                 console.log(response)
                 console.log(JSON.stringify(response.data))
-                setDisableRefresh(false)
+                setDisableSave(false)
             })
             .catch(error => {
                 console.log(error);
@@ -81,15 +89,15 @@ export default function UpsertPassword({route}){
     async function savePassword(obj){
         if(token){
             const body = {
-                app: obj.app,
-                login: obj.login,
-                password: obj.password
+                app: appValue,
+                login: userValue,
+                password: passValue
             }
             await api.post('/api/addapp',body,headers)
             .then((response) => {
                 console.log(response)
                 console.log(JSON.stringify(response.data))
-                setDisableRefresh(false)
+                setDisableSave(false)
             })
             .catch(error => {
                 console.log(error);
@@ -107,7 +115,7 @@ export default function UpsertPassword({route}){
             .then((response) => {
                 console.log(response)
                 console.log(JSON.stringify(response.data))
-                setDisableRefresh(false)
+                setDisableRestore(false)
             })
             .catch(error => {
                 console.log(error);
@@ -125,7 +133,7 @@ export default function UpsertPassword({route}){
             .then((response) => {
                 console.log(response)
                 console.log(JSON.stringify(response.data))
-                setDisableRefresh(false)
+                setDisableDelete(false)
             })
             .catch(error => {
                 console.log(error);
@@ -135,12 +143,27 @@ export default function UpsertPassword({route}){
                 }
             });
         }
+
+        Alert.alert('Going to be deleted', 'in 48 hours', [
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
     }
 
     React.useEffect(() => {
         setToken(loginToken)
         setSkipped(loginSkipped)
-        setNewOrEdit()
+        setRow(loginRow)
+        if (loginRow.id !== 0){
+            var date = moment().format()
+            var expirydate = moment(loginRow.deleteDate).add(48,'h').format()
+            var diffr = moment.duration(moment(expirydate).diff(moment(date)));
+            var hours = parseInt(diffr.asHours());
+            var minutes = parseInt(diffr.minutes());
+            var seconds = parseInt(diffr.seconds());
+            var d = hours * 60 * 60 + minutes * 60 + seconds;
+            setTotalDuration(d);
+        }
+            
     },[token,row]);
     
     
@@ -149,132 +172,293 @@ export default function UpsertPassword({route}){
     } else {
         return(
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <Image source={logoImg} />
-                    {loginRow ? (
-                        <Text 
-                        style={{
-                            fontFamily: 'AnonymousPro_400Regular',
-                            fontSize: 25,
-                            marginBottom: 16,
-                            marginTop: 20,
-                            marginHorizontal: 20,
-                            marginRight: 40,
-                            color: '#F6F6F6'}}>Edit Password
-                        </Text>
-                    ):(
-                        <Text 
-                        style={{
-                            fontFamily: 'AnonymousPro_400Regular',
-                            fontSize: 25,
-                            marginBottom: 16,
-                            marginTop: 20,
-                            marginHorizontal: 20,
-                            marginRight: 50,
-                            color: '#F6F6F6'}}>New Password
-                        </Text> 
-                    )}
-                </View>
+                <View style={styles.del}>
 
-                <View style={styles.incident}>
-                    <View style={styles.detailsButton}>
-                        <Text style={styles.incidentProperty}>App:</Text>
-                        {skipped ? ( <Text style={styles.incidentValue}>{row.app}</Text>) :
-                        <TextInput
-                        style={{
-                            color: '#F6F6F6',
-                            fontFamily: 'AnonymousPro_400Regular',
-                            fontSize: 25,
-                            marginBottom: 35,
-                            marginTop: 5,
-                            backgroundColor: '#23272A',
-                            borderRadius: 10,
-                        }}
-                        textAlign={'center'}
-                        placeholderTextColor="#99AAB5"
-                        maxLength={6}
-                        onChangeText={value => {
-                            setApp(value)
-                        }}
-                        placeholder={row.app}
-                        />}
+                    <View style={styles.header}>
+                        <Image source={logoImg} />
+                        {row.id !== 0 ? 
+                        (
+                            <Text 
+                            style={{
+                                fontFamily: 'AnonymousPro_400Regular',
+                                fontSize: 25,
+                                marginBottom: 16,
+                                marginTop: 20,
+                                marginHorizontal: 20,
+                                marginRight: 40,
+                                color: '#99AAB5'}}>Edit Password
+                            </Text>
+                        ):(
+                            <Text 
+                            style={{
+                                fontFamily: 'AnonymousPro_400Regular',
+                                fontSize: 25,
+                                marginBottom: 16,
+                                marginTop: 20,
+                                marginHorizontal: 20,
+                                marginRight: 50,
+                                color: '#99AAB5'}}>New Password
+                            </Text> 
+                        )}
+                    </View>
+
+                    <View style={styles.incident}>
+                        <View style={styles.detailsButton}>
+                            <Text style={styles.incidentProperty}>App:</Text>
+                            {row.id == 0 ? (
+                                //New Register of Password
+                                <TextInput
+                                    style={{
+                                        color: '#99AAB5',
+                                        fontFamily: 'AnonymousPro_400Regular',
+                                        fontSize: 25,
+                                        marginBottom: 35,
+                                        marginTop: 5,
+                                        backgroundColor: '#23272A',
+                                        borderRadius: 10,
+                                    }}
+                                    textAlign={'center'}
+                                    placeholderTextColor="#99AAB5"
+                                    onChangeText={(valueApp) => {
+                                        appValue = valueApp
+                                        setApp(valueApp)
+                                        setUser(row.login)
+                                        setPassword(row.password)
+                                    }}
+                                    placeholder={'Insert App'}
+                                />
+                            ): 
+                             skipped ?  (
+                            //2FA Skipped
+                            <Text 
+                                style={styles.incidentValue}>
+                                    {row.app}
+                            </Text> ):
+                            //2FA Authenticated
+                            <TextInput
+                                style={{
+                                    color: '#99AAB5',
+                                    fontFamily: 'AnonymousPro_400Regular',
+                                    fontSize: 25,
+                                    marginBottom: 35,
+                                    marginTop: 5,
+                                    backgroundColor: '#23272A',
+                                    borderRadius: 10,
+                                }}
+                                textAlign={'center'}
+                                defaultValue={row.app}
+                                placeholderTextColor="#99AAB5"
+                                onChangeText={(valueApp) => {
+                                    appValue = valueApp
+                                    setApp(valueApp)
+                                    setUser(row.login)
+                                    setPassword(row.password)
+                                }}
+                                placeholder={row.app}
+                            />}
+                            
+                        </View>
+
+                        <View style={styles.detailsButton}>
+                            <View style={styles.viewValue}>
+                            <Text style={styles.incidentProperty}>User:</Text>
+                            {skipped ? ( <></>):
+                                <Feather 
+                                    name={"copy"} 
+                                    size={20} 
+                                    color={"#99AAB5"} 
+                                    onPress={() => {
+                                        copyToClipboard('username',row.login)
+                                        setDisableCopy(true)
+                                    }}
+                                />}
+                            </View>
+                                {row.id == 0 ? (
+                                //New Register of Password
+                                <TextInput
+                                    style={{
+                                        color: '#99AAB5',
+                                        fontFamily: 'AnonymousPro_400Regular',
+                                        fontSize: 25,
+                                        marginBottom: 35,
+                                        marginTop: 5,
+                                        backgroundColor: '#23272A',
+                                        borderRadius: 10,
+                                    }}
+                                    textAlign={'center'}
+                                    placeholderTextColor="#99AAB5"
+                                    onChangeText={(valueUser) => {
+                                        userValue = valueUser
+                                        setApp(row.app)
+                                        setUser(valueUser)
+                                        setPassword(row.password)
+                                    }}
+                                    placeholder={'Insert username'}
+                                />
+                            ): skipped ? ( <Text style={styles.incidentValue}>*****</Text>) :
+                                <TextInput
+                                style={{
+                                    color: '#99AAB5',
+                                    fontFamily: 'AnonymousPro_400Regular',
+                                    fontSize: 20,
+                                    marginBottom: 35,
+                                    marginTop: 5,
+                                    backgroundColor: '#23272A',
+                                    borderRadius: 10,
+                                }}
+                                textAlign={'center'}
+                                placeholderTextColor="#99AAB5"
+                                defaultValue={row.login}
+                                onChangeText={(valueUser) => {
+                                    userValue = valueUser
+                                    setApp(row.app)
+                                    setUser(valueUser)
+                                    setPassword(row.password)
+                                }}
+                                placeholder={row.login}
+                                />}
+                                
+                        </View>
+
+                        <View style={styles.detailsButton}>
+                            <View style={styles.viewValue}>
+                                <Text style={styles.incidentProperty}>Password:</Text>
+                                {skipped ? ( <></>):
+                                <Feather 
+                                    name={"copy"} 
+                                    size={20} 
+                                    color={"#99AAB5"} 
+                                    onPress={() => {
+                                        copyToClipboard('password',row.password)
+                                        setDisableCopy(true)
+                                    }}
+                                />}
+                            </View>
+                                {row.id == 0 ? (
+                                //New Register of Password
+                                <TextInput
+                                    style={{
+                                        color: '#99AAB5',
+                                        fontFamily: 'AnonymousPro_400Regular',
+                                        fontSize: 25,
+                                        marginBottom: 35,
+                                        marginTop: 5,
+                                        backgroundColor: '#23272A',
+                                        borderRadius: 10,
+                                    }}
+                                    textAlign={'center'}
+                                    placeholderTextColor="#99AAB5"
+                                    onChangeText={(valuePass) => {
+                                        passValue = valuePass
+                                        setApp(row.app)
+                                        setUser(row.login)
+                                        setPassword(valuePass)
+                                    }}
+                                    placeholder={'Insert password'}
+                                />
+                            ): skipped ? ( <Text style={styles.incidentValue}>*****</Text>) :
+                                <TextInput
+                                style={{
+                                    color: '#99AAB5',
+                                    fontFamily: 'AnonymousPro_400Regular',
+                                    fontSize: 20,
+                                    marginBottom: 35,
+                                    marginTop: 5,
+                                    backgroundColor: '#23272A',
+                                    borderRadius: 10,
+                                }}
+                                textAlign={'center'}
+                                placeholderTextColor="#99AAB5"
+                                defaultValue={row.password}
+                                onChangeText={(valuePass) => {
+                                    passValue = valuePass
+                                    setApp(row.app)
+                                    setUser(row.login)
+                                    setPassword(valuePass)
+                                }}
+                                placeholder={row.password}
+                                />}
+                                
+                        </View>
                         
+
                     </View>
 
-                    <View style={styles.detailsButton}>
-                        <View style={styles.viewValue}>
-                        <Text style={styles.incidentProperty}>User:</Text>
-                        <Feather name={"copy"} size={20} color={"#23272A"} />
-                        </View>
-                            {skipped ? ( <Text style={styles.incidentValue}>***</Text>) :
-                            <TextInput
-                            style={{
-                                color: '#F6F6F6',
-                                fontFamily: 'AnonymousPro_400Regular',
+                    {row.deleteDate ? ( 
+                            <View>
+                                <Text style={styles.deletedPass}>
+                                This password is going to be deleted in
+                                </Text>
+                                <CountDown
+                                    until={totalDuration}
+                                    digitStyle={{backgroundColor: '#99AAB5'}}
+                                    timetoShow={('H', 'M', 'S')}
+                                    digitTxtStyle={{color: '#2C2F33'}}
+                                    timeLabelStyle={{color: '#99AAB5', fontWeight: 'bold'}}
+                                    onFinish={() => navigation.goBack() }
+                                    size={20}
+                                />
+                            </View>)
+                            :
+                            skipped ? ( <Text style={{marginTop: 30,
+                                marginBottom:30,
                                 fontSize: 20,
-                                marginBottom: 35,
-                                marginTop: 5,
-                                backgroundColor: '#23272A',
-                                borderRadius: 10,
-                            }}
-                            textAlign={'center'}
-                            placeholderTextColor="#99AAB5"
-                            maxLength={6}
-                            onChangeText={value => {
-                                setUser(value)
-                            }}
-                            placeholder={row.login}
-                            />}
-                            
-                    </View>
-
-                    <View style={styles.detailsButton}>
-                        <View style={styles.viewValue}>
-                            <Text style={styles.incidentProperty}>Password:</Text>
-                            <Feather name={"copy"} size={20} color={"#23272A"} />
-                        </View>
-                            {skipped ? ( <Text style={styles.incidentValue}>*****</Text>) :
-                            <TextInput
-                            style={{
-                                color: '#F6F6F6',
                                 fontFamily: 'AnonymousPro_400Regular',
-                                fontSize: 20,
-                                marginBottom: 35,
-                                marginTop: 5,
-                                backgroundColor: '#23272A',
-                                borderRadius: 10,
-                            }}
-                            textAlign={'center'}
-                            placeholderTextColor="#99AAB5"
-                            maxLength={6}
-                            onChangeText={value => {
-                                setPassword(value)
-                            }}
-                            placeholder={row.password}
-                            />}
-                            
+                                color: '#99AAB5',
+                                textAlign: 'center'}}>You need to authenticate to check your passwords</Text>) : <></>
+                        }
                     </View>
 
-                    {row.deleteDate ? ( <Text style={styles.incidentValue}>
-                        This register is going to be deleted 48h after {row.deleteDate}
-                        </Text>) 
-                        :
-                        <></>
-                    }
-
-                </View>
-
-                <View style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    fontFamily: 'AnonymousPro_400Regular',
-                    marginTop:50,
-                    padding:24,
-                }} >
-                    <Feather name={"trash-2"} size={40} color={"#FFFFFF"} />
-                    <Feather name={"save"} size={40} color={"#FFFFFF"} />
-                </View>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontFamily: 'AnonymousPro_400Regular',
+                        marginTop:10,
+                        marginBottom: 30
+                    }} >
+                        <Feather 
+                            name={"trash-2"} 
+                            size={40} 
+                            color={"#99AAB5"} 
+                            disabled={disableDelete}
+                            onPress={() => {
+                                deletePassword(row.id)
+                                setDisableDelete(true)
+                                navigation.navigate('getPassword', { 'loginToken': token, 'skipped': skipped, 'refresh': true})
+                            }}
+                        />
+                        {row.deleteDate ? (<Feather 
+                                                name={"corner-up-left"} 
+                                                size={40} 
+                                                color={"#99AAB5"} 
+                                                disabled={disableRestore}
+                                                onPress={() => {
+                                                    restorePassword(row.id)
+                                                    setDisableRestore(true)
+                                                    navigation.navigate('getPassword', { 'loginToken': token, 'skipped': skipped, 'refresh': true})
+                                                }}
+                                            />) 
+                            :
+                            <Feather 
+                                name={"save"} 
+                                size={40} 
+                                color={"#99AAB5"} 
+                                disabled={skipped}
+                                onPress={() => {
+                                    if (row.id){
+                                        updatePassword(row)
+                                    } else{
+                                        refreshRow()
+                                        savePassword(row)
+                                    }
+                                    setDisableSave(true)
+                                    navigation.navigate('getPassword', { 'loginToken': token, 'skipped': skipped, 'refresh': true})
+                                }}
+                            />
+                        }
+                    </View>
+                
 
             </View>
         )

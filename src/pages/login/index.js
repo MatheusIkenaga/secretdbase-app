@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useNavigation} from '@react-navigation/native'
+import {useNavigation } from '@react-navigation/native'
 import * as Google from 'expo-auth-session/providers/google';
 import {View, Image, Button, Text, TextInput, ActivityIndicator } from 'react-native'
 import axios from 'axios'

@@ -46,7 +46,7 @@ export default function Add2fa({route}){
             if(response.data.success !== true){
                 alert('Error, try again')
             } else {
-                navigation.navigate('getPassword', { 'loginToken': token })
+                navigation.navigate('getPassword', { 'loginToken': token , 'skipped': false, 'refresh': true})
             }
         })
         .catch(error => {

@@ -15,7 +15,7 @@ export default function Routes(){
         <NavigationContainer>
 
             <AppStack.Navigator screenOptions={{headerShown: false}}>
-                <AppStack.Screen name="Login" component={login}/>
+                <AppStack.Screen name="login" component={login}/>
                 <AppStack.Screen name="add2fa" component={add2fa}/>
                 <AppStack.Screen name="getPassword" component={getPassword}/>
                 <AppStack.Screen name="upsertPassword" component={upsertPassword}/>

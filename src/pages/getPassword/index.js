@@ -14,16 +14,19 @@ import styles from './styles'
 export default function GetPassword({route}){
     const loginToken = route.params.loginToken
     const loginSkipped = route.params.skipped
+    const loginRefresh = route.params.refresh
     const navigation = useNavigation()
     const [token, setToken] = React.useState(null);
     const [skipped, setSkipped] = React.useState(true);
+    const [refresh, setRefresh] = React.useState(false);
     const [passwordRawArray, setPasswordRawArray] = React.useState(null);
     const [passwordReqArray, setPasswordReqArray] = React.useState(null);
     const [disableRefresh, setDisableRefresh] = React.useState(false);
     const [searchText, setSearchText] = React.useState('');
 
     function addNewPassword(){
-        navigation.navigate('upsertPassword', { 'loginToken': token, 'skipped': skipped, 'row': null })
+        var newPass = {"id":0,"app":"","login":"","password":""}
+        navigation.navigate('upsertPassword', { 'loginToken': token, 'skipped': skipped, 'row': newPass })
     }
     function editPassword(row){
         navigation.navigate('upsertPassword', { 'loginToken': token, 'skipped': skipped, 'row': row })
@@ -52,6 +55,7 @@ export default function GetPassword({route}){
                 if (error.response.status==401){
                     navigation.navigate('login')
                 }
+                setDisableRefresh(false)
             });
         }
     }
@@ -76,10 +80,17 @@ export default function GetPassword({route}){
     React.useEffect(() => {
         setToken(loginToken)
         setSkipped(loginSkipped)
-        if (passwordRawArray == null){
+        setRefresh(loginRefresh)
+        
+        if ((passwordRawArray == null)||(refresh == true)){
+            if(refresh){
+                navigation.setParams({ 'loginToken': token, 'skipped': skipped, 'refresh': !refresh})
+                setRefresh(false)
+            }
             getPasswords()
         }
-    },[token,passwordRawArray]);
+        
+    },[token,passwordRawArray,refresh,route]);
     
     
     if (!fontsLoaded) {
@@ -102,44 +113,46 @@ export default function GetPassword({route}){
 
                 </View>
                 <View style={styles.search}>
-                <SearchBar
-                style={{
-                    fontFamily: 'AnonymousPro_400Regular',
-                    fontSize: 20,
-                }}
-                round
-                containerStyle={{backgroundColor: 'transparent',
-                borderBottomColor: 'transparent',
-                borderTopColor: 'transparent',
-                width: '90%'}}
-                underlineColorAndroid={'transparent'}
-                onChangeText={(text) => searchFilterFunction(text)}
-                onClear={(text) => searchFilterFunction('')}
-                placeholder="Search Here..."
-                value={searchText}
-                />
-                <Feather 
-                name={"refresh-cw"} 
-                size={20} 
-                color={"#FFFFFF"} 
-                disabled={disableRefresh}
-                onPress={() => {
-                    getPasswords()
-                    setDisableRefresh(true)}}/>
+                    <SearchBar
+                        style={{
+                            fontFamily: 'AnonymousPro_400Regular',
+                            fontSize: 20,
+                        }}
+                        round
+                        containerStyle={{
+                            backgroundColor: 'transparent',
+                            borderBottomColor: 'transparent',
+                            borderTopColor: 'transparent',
+                            width: '90%'}}
+                        underlineColorAndroid={'transparent'}
+                        onChangeText={(text) => searchFilterFunction(text)}
+                        onClear={(text) => searchFilterFunction('')}
+                        placeholder="Search Here..."
+                        value={searchText}
+                    />
+                    <Feather 
+                        name={"refresh-cw"} 
+                        size={20} 
+                        color={"#FFFFFF"} 
+                        disabled={disableRefresh}
+                        onPress={() => {
+                            getPasswords()
+                            setDisableRefresh(true)}}
+                    />
                 </View>
 
                 <Button
-                buttonStyle={{borderColor:'#99AAB5',}}
-                color= '#99AAB5'
-                width={'90%'}
-                type={'outline'}
-                titleStyle={{fontFamily:'AnonymousPro_400Regular',
-                fontSize: 18,
-                color:'#99AAB5',}}
-                title="New Password"
-                onPress={() => {
-                    addNewPassword();
-                }}
+                    buttonStyle={{borderColor:'#99AAB5',}}
+                    color= '#99AAB5'
+                    width={'90%'}
+                    type={'outline'}
+                    titleStyle={{fontFamily:'AnonymousPro_400Regular',
+                    fontSize: 18,
+                    color:'#99AAB5',}}
+                    title="New Password"
+                    onPress={() => {
+                        addNewPassword();
+                    }}
                 />
 
 
@@ -158,13 +171,13 @@ export default function GetPassword({route}){
 
                             <View style={styles.detailsButton}>
                                 <Text style={styles.incidentProperty}>User:</Text>
-                                {skipped ? ( <Text style={styles.incidentValue}>***</Text>) :
+                                {skipped ? ( <Text style={styles.incidentValue}>*****</Text>) :
                                 <Text style={styles.incidentValue}>{password.login}</Text>}
                             </View>
 
                             <View style={styles.detailsButton}>
                                 <Text style={styles.incidentProperty}>Password:</Text>
-                                {skipped ? ( <Text style={styles.incidentValue}>***</Text>) :
+                                {skipped ? ( <Text style={styles.incidentValue}>*****</Text>) :
                                 <Text style={styles.incidentValue}>{password.password}</Text>}
                             </View>
 

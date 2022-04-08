@@ -55,15 +55,17 @@ export default StyleSheet.create({
         marginTop: 30,
         padding:24,
         borderRadius:8,
-        backgroundColor: '#97A9B4',
+        borderColor: '#99AAB5', 
+        borderWidth: 1,
+        //backgroundColor: '#97A9B4',
         marginBottom: 16,
         fontFamily: 'AnonymousPro_400Regular',
-        height: 450
+        height: 400
     },
 
     incidentProperty:{
         fontSize: 20,
-        color: '#2C2F33',
+        color: '#99AAB5',
         fontFamily: 'AnonymousPro_700Bold',
     },
 
@@ -72,7 +74,20 @@ export default StyleSheet.create({
         marginBottom:30,
         fontSize: 20,
         fontFamily: 'AnonymousPro_400Regular',
-        color: '#23272A',
+        color: '#99AAB5',
+        textAlign: 'center'
+    },
+
+    deletedPass:{
+        marginBottom:20,
+        fontSize: 20,
+        fontFamily: 'AnonymousPro_400Regular',
+        color: '#99AAB5',
+        textAlign: 'center'
+    },
+
+    del:{
+       flex: 1
     },
 
     detailsButton:{

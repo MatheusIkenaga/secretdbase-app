@@ -1,6 +1,6 @@
 import React from 'react'
 import {useNavigation} from '@react-navigation/native'
-import {View, Image, Text, TouchableOpacity, Button, TextInput} from 'react-native'
+import {View, Image, Text, Button, TextInput} from 'react-native'
 import logoImg from '../../assets/logo.png'
 import styles from './styles'
 import api from '../../services/api'
@@ -13,7 +13,6 @@ export default function Validate2fa({route}){
 
     const headers = { headers: { 'Authorization': `Bearer ${token}` } }
 
-
     async function validate2fa(){
         if (token){
             await api.post('/api/verify2fa',{'token':token2fa},headers)
@@ -21,7 +20,7 @@ export default function Validate2fa({route}){
                 if(response.data.success !== true){
                     alert('Error, try again')
                 } else {
-                    navigation.navigate('getPassword', { 'loginToken': token, 'skipped': false})
+                    navigation.navigate('getPassword', { 'loginToken': token, 'skipped': false, 'refresh': true})
                 }
             })
             .catch(error => {
@@ -33,9 +32,10 @@ export default function Validate2fa({route}){
             });
         }
     }
+    
 
     function skip2fa(){
-        navigation.navigate('getPassword', { 'loginToken': token, 'skipped': true})
+        navigation.navigate('getPassword', { 'loginToken': token, 'skipped': true, 'refresh': true})
     }
 
     React.useEffect(() => {
