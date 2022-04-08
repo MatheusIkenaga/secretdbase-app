@@ -154,6 +154,10 @@ export default function UpsertPassword({route}){
         setSkipped(loginSkipped)
         setRow(loginRow)
         if (loginRow.id !== 0){
+
+            appValue    = loginRow.app
+            userValue   = loginRow.login
+            passValue   = loginRow.password
             var date = moment().format()
             var expirydate = moment(loginRow.deleteDate).add(48,'h').format()
             var diffr = moment.duration(moment(expirydate).diff(moment(date)));
