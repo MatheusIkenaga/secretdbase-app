@@ -2,7 +2,7 @@
   "expo": {
     "name": "Secret DBase",
     "slug": "secretdbase",
-    "owner":"matheusikenaga",
+    "owner": "matheusikenaga",
     "platforms": [
       "ios",
       "android"
@@ -25,6 +25,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.matheusikenaga.secretdbase",
+      "versionCode": 1,
+      "backgroundColor": "#2C2F33",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#2C2F33"

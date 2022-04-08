@@ -24,6 +24,7 @@ export default function Login(){
 
     const [request, response, promptAsync] = Google.useAuthRequest({
         expoClientId: '471601995658-jp0lvrr584i86otn6oneh1nc7tl2b6nf.apps.googleusercontent.com',
+        androidClientId: '471601995658-ad08ogki5vo6tn06tr9fasjllasiu87d.apps.googleusercontent.com',
         scopes: ['profile', 'email']
     });
 

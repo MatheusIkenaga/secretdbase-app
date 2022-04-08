@@ -60,7 +60,7 @@ export default StyleSheet.create({
         //backgroundColor: '#97A9B4',
         marginBottom: 16,
         fontFamily: 'AnonymousPro_400Regular',
-        height: 400
+        height: '57%'
     },
 
     incidentProperty:{
@@ -91,7 +91,7 @@ export default StyleSheet.create({
     },
 
     detailsButton:{
-        marginTop:25,
+        marginTop:15,
         justifyContent: 'space-between',
         fontFamily: 'AnonymousPro_400Regular',
     },
