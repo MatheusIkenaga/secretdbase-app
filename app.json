@@ -3,13 +3,14 @@
     "name": "Secret DBase",
     "slug": "secretdbase",
     "owner":"matheusikenaga",
+    "scheme": "secretdbase",
     "platforms": [
       "ios",
       "android"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconApp.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",

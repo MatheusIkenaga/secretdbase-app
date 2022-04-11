@@ -1092,7 +1092,7 @@
     xcode "^3.0.1"
     xml2js "0.4.23"
 
-"@expo/config-plugins@4.1.0", "@expo/config-plugins@^4.0.14", "@expo/config-plugins@^4.0.2":
+"@expo/config-plugins@4.1.0", "@expo/config-plugins@^4.0.2":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.0.tgz#0365e2e51e2e3e3b4e7db1fbbada5be661798be6"
   integrity sha512-+Uq7kzi1StUZZZivnnqNV6+v8b+SMF6MDgH+cEZxCoM9uwLXOK0rTAURzBGtl+C6EEbKnoZmnKGuzABBGPRP7A==
@@ -2791,15 +2791,6 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-expo-app-auth@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/expo-app-auth/-/expo-app-auth-12.0.0.tgz#0a2ad4e6d013e1d0b799d2d9be2f42930de28d4d"
-  integrity sha512-MlvuiaSoFXilMC6UAb1cESx2JCZAfhNTNs+fjkU/0CSQsY2COE5cwLqKDpnsrz4ia8th6QPxsomeRzlSJkV5aA==
-  dependencies:
-    "@expo/config-plugins" "^4.0.14"
-    expo-modules-core "0.7.0"
-    invariant "^2.2.4"
-
 expo-app-auth@~11.1.0:
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/expo-app-auth/-/expo-app-auth-11.1.1.tgz#14331bfc26f754560f08c5e4100b2a958b4ea55e"
@@ -2918,14 +2909,6 @@ expo-modules-core@0.6.5:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.6.5.tgz#39a1b2f00af66e0bd03acb1f86a25bd29e1a95a5"
   integrity sha512-h/9+SJ3m8XkDUV1QrPO8WeXaeRYWLBJrOqhokDyhgWUYSqe6JOuRx1ZkoGq/GmTiwjouRDbXPsXUBiU9HWLYyA==
-  dependencies:
-    compare-versions "^3.4.0"
-    invariant "^2.2.4"
-
-expo-modules-core@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.7.0.tgz#ab9ff51410a1dca22087a7db5a95ada2693b6d5a"
-  integrity sha512-6jd7m2J7kMsnpGtWb4KF1wDf/57+4Tnf1l0kMoww8iRsY5al7QRXhwdy5mSqQ2TaJWUspudsWtFWK5IlYw5NXA==
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
