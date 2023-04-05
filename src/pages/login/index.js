@@ -8,6 +8,9 @@ import api from '../../services/api'
 import styles from './styles';
 import AppLoading from 'expo-app-loading';
 import { useFonts ,AnonymousPro_400Regular} from '@expo-google-fonts/anonymous-pro';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Login(){
     const [number, onChangeNumber] = React.useState(null);
@@ -19,7 +22,7 @@ export default function Login(){
     let [fontsLoaded] = useFonts({
         AnonymousPro_400Regular
     });
-    
+
     const navigation = useNavigation()
 
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -43,7 +46,7 @@ export default function Login(){
                 //Getting user data from Google
                 axios
                 .get("https://www.googleapis.com/userinfo/v2/me", 
-                    { headers: { Authorization: 'Bearer '+authentication.accessToken } })
+                    { headers: { Authorization: `Bearer ${authentication.accessToken}` } })
                 .then(response => {
                     var user = {
                         name: response.data.given_name+' '+response.data.family_name,

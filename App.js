@@ -4,7 +4,6 @@ import Routes from './src/routes'
 
 export default function App() {
   const [appIsReady, setAppIsReady] = React.useState(false);
-
   React.useEffect(() => {
     async function prepare() {
       try {
