@@ -1,0 +1,1 @@
+para buildar versão interna: eas build --profile development --platform android
